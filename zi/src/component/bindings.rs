@@ -1,4 +1,3 @@
-use smallvec::{smallvec, SmallVec};
 use std::{
     any::{Any, TypeId},
     borrow::Cow,
@@ -7,13 +6,15 @@ use std::{
     marker::PhantomData,
 };
 
+use smallvec::{smallvec, SmallVec};
+
 use super::{Component, DynamicMessage};
 use crate::terminal::Key;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct CommandId(usize);
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum NamedBindingQuery {
     Match(Cow<'static, str>),
     PrefixOf(SmallVec<[Cow<'static, str>; 4]>),
@@ -33,7 +34,7 @@ impl NamedBindingQuery {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BindingQuery {
     Match(CommandId),
     PrefixOf(SmallVec<[CommandId; 4]>),
@@ -527,10 +528,12 @@ fn panic_on_overlapping_key_bindings(
 
 #[cfg(test)]
 mod tests {
+    use std::{cell::RefCell, rc::Rc};
+
+    use smallvec::smallvec;
+
     use super::*;
     use crate::prelude::*;
-    use smallvec::smallvec;
-    use std::{cell::RefCell, rc::Rc};
 
     struct Empty;
 

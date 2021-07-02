@@ -1,5 +1,6 @@
-use ropey::{iter::Chunks, str_utils::byte_to_char_idx, Rope, RopeSlice};
 use std::ops::RangeBounds;
+
+use ropey::{iter::Chunks, str_utils::byte_to_char_idx, Rope, RopeSlice};
 use unicode_segmentation::{GraphemeCursor, GraphemeIncomplete};
 
 use super::{ByteIndex, CharIndex, LineIndex, TextStorage, TextStorageMut};

@@ -3,8 +3,6 @@ pub mod bindings;
 pub mod layout;
 pub(crate) mod template;
 
-pub use self::layout::{ComponentExt, Layout};
-
 use std::{
     any::{self, TypeId},
     fmt,
@@ -12,6 +10,7 @@ use std::{
     rc::Rc,
 };
 
+pub use self::layout::{ComponentExt, Layout};
 use self::{
     bindings::{Bindings, NamedBindingQuery},
     template::{ComponentId, DynamicMessage},

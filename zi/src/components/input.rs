@@ -1,14 +1,13 @@
 use ropey::Rope;
 use unicode_width::UnicodeWidthStr;
 
+pub use crate::text::Cursor;
 use crate::{
     layout::Layout,
     text::{cursor, CharIndex, TextStorage},
     AnyCharacter, Bindings, Callback, Canvas, Colour, Component, ComponentLink, Key, Rect,
     ShouldRender, Style,
 };
-
-pub use crate::text::Cursor;
 
 #[derive(Clone, PartialEq)]
 pub struct InputProperties {
@@ -19,7 +18,7 @@ pub struct InputProperties {
     pub focused: bool,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct InputStyle {
     pub content: Style,
     pub cursor: Style,

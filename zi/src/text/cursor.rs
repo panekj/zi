@@ -2,7 +2,7 @@ use std::{cmp, ops::Range};
 
 use super::{CharIndex, TextStorage, TextStorageMut};
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Cursor {
     /// Char range under cursor, aligned to extended grapheme clusters.
     range: Range<CharIndex>,

@@ -2,9 +2,9 @@ pub mod cursor;
 pub mod rope;
 // pub mod string;
 
-pub use cursor::Cursor;
-
 use std::ops::{Add, RangeBounds, Sub};
+
+pub use cursor::Cursor;
 
 pub trait TextStorage<'a> {
     type Slice: TextStorage<'a>;

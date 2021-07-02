@@ -1,5 +1,6 @@
-use smallstr::SmallString;
 use std::{self, cmp, iter};
+
+use smallstr::SmallString;
 use unicode_segmentation::UnicodeSegmentation;
 use unicode_width::UnicodeWidthStr;
 
@@ -11,7 +12,7 @@ pub type GraphemeCluster = SmallString<[u8; 16]>;
 
 /// A "text element", which consists of an extended grapheme cluster and
 /// associated styling.
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Textel {
     pub grapheme: GraphemeCluster,
     pub style: Style,
@@ -270,9 +271,65 @@ impl Default for Style {
     }
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum Colour {
+    Default,
+    Base(BaseColour),
+    BrightBase(BaseColour),
+    Ansi(AnsiColour),
+    Rgb(RgbColour),
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum BaseColour {
+    Black,
+    Red,
+    Yellow,
+    Green,
+    Cyan,
+    Blue,
+    Magenta,
+    White,
+}
+
+impl BaseColour {
+    #[cfg(feature = "crossterm")]
+    pub fn as_crossterm_base(self) -> crossterm::style::Color {
+        use crossterm::style::Color::*;
+        match self {
+            BaseColour::Black => Black,
+            BaseColour::Red => DarkRed,
+            BaseColour::Yellow => DarkYellow,
+            BaseColour::Green => DarkGreen,
+            BaseColour::Cyan => DarkCyan,
+            BaseColour::Blue => DarkBlue,
+            BaseColour::Magenta => DarkMagenta,
+            BaseColour::White => Grey,
+        }
+    }
+
+    #[cfg(feature = "crossterm")]
+    pub fn as_crossterm_bright(self) -> crossterm::style::Color {
+        use crossterm::style::Color::*;
+        match self {
+            BaseColour::Black => DarkGrey,
+            BaseColour::Red => Red,
+            BaseColour::Yellow => Yellow,
+            BaseColour::Green => Green,
+            BaseColour::Cyan => Cyan,
+            BaseColour::Blue => Blue,
+            BaseColour::Magenta => Magenta,
+            BaseColour::White => White,
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct AnsiColour(pub u8);
+
 /// An RGB encoded colour, 1-byte per channel.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub struct Colour {
+pub struct RgbColour {
     pub red: u8,
     pub green: u8,
     pub blue: u8,
@@ -282,27 +339,35 @@ impl Colour {
     /// Creates a colour from the provided RGB values.
     #[inline]
     pub const fn rgb(red: u8, green: u8, blue: u8) -> Self {
-        Self { red, green, blue }
+        Self::Rgb(RgbColour { red, green, blue })
     }
 
     /// Returns black.
     #[inline]
     pub const fn black() -> Self {
-        Self {
-            red: 0,
-            green: 0,
-            blue: 0,
-        }
+        Self::Base(BaseColour::Black)
     }
 
     /// Returns white.
     #[inline]
     pub const fn white() -> Self {
-        Self {
-            red: 255,
-            green: 255,
-            blue: 255,
-        }
+        Self::Base(BaseColour::White)
+    }
+
+    #[cfg(feature = "crossterm")]
+    pub fn as_crosstem_color(self) -> Option<crossterm::style::Color> {
+        Some(match self {
+            // Colour::Default => ResetColor,
+            Colour::Base(c) => c.as_crossterm_base(),
+            Colour::BrightBase(c) => c.as_crossterm_bright(),
+            Colour::Ansi(ansi) => crossterm::style::Color::AnsiValue(ansi.0),
+            Colour::Rgb(RgbColour { red, green, blue }) => crossterm::style::Color::Rgb {
+                r: red,
+                g: green,
+                b: blue,
+            },
+            _ => None?,
+        })
     }
 }
 

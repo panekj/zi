@@ -1,11 +1,12 @@
 //! The `Layout` type and flexbox-like utilities for laying out components.
 
-use smallvec::SmallVec;
 use std::{
     cmp,
     collections::hash_map::DefaultHasher,
     hash::{Hash, Hasher},
 };
+
+use smallvec::SmallVec;
 
 use super::{
     template::{ComponentDef, DynamicTemplate},

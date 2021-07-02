@@ -155,10 +155,10 @@ pub use terminal::{Background, Canvas, Colour, Foreground, Key, Position, Rect, 
 pub mod prelude {
     //! The Zi prelude.
     pub use super::{
-        AnyCharacter, Bindings, Component, ComponentExt, ComponentLink, Container, FlexBasis,
-        FlexDirection, Item, Layout, ShouldRender,
+        AnyCharacter, Background, Bindings, Canvas, Colour, Component, ComponentExt, ComponentLink,
+        Container, FlexBasis, FlexDirection, Foreground, Item, Key, Layout, Position, Rect,
+        ShouldRender, Size, Style,
     };
-    pub use super::{Background, Canvas, Colour, Foreground, Key, Position, Rect, Size, Style};
 }
 
 // Re-export 3rd party libraries to do with unicode segmentation.
