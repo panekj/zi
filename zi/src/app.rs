@@ -2,8 +2,9 @@
 //! implementing a backend, but otherwise not meant to be used directly by an
 //! end application.
 
-use smallvec::SmallVec;
 use std::{collections::HashMap, fmt::Debug, time::Instant};
+
+use smallvec::SmallVec;
 
 use crate::{
     component::{
@@ -24,7 +25,7 @@ pub trait MessageSender: Debug + Send + 'static {
 #[derive(Debug)]
 pub struct ComponentMessage(pub(crate) LinkMessage);
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum PollState {
     Clean,
     Dirty(Option<Size>),

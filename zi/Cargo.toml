@@ -17,3 +17,12 @@ smallstr = "0.3.0"
 smallvec = "1.8.0"
 unicode-segmentation = "1.9.0"
 unicode-width = "0.1.9"
+
+[dependencies.crossterm]
+version = "0.23.2"
+features = ["event-stream"]
+optional = true
+
+[features]
+default = []
+crossterm = ["dep:crossterm"]

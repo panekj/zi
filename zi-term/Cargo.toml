@@ -16,4 +16,4 @@ log = "0.4.16"
 thiserror = "1.0.30"
 tokio = { version = "1.17.0", features = ["io-util", "macros", "rt", "sync", "time"] }
 
-zi = { version = "0.3.2", path = "../zi" }
+zi = { version = "0.3.2", path = "../zi", features = ["crossterm"] }

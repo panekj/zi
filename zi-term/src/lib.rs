@@ -4,29 +4,33 @@ mod error;
 mod painter;
 mod utils;
 
-pub use self::error::{Error, Result};
-
-use crossterm::{self, queue, QueueableCommand};
-use futures::stream::{Stream, StreamExt};
 use std::{
     io::{self, BufWriter, Stdout, Write},
     pin::Pin,
     time::{Duration, Instant},
 };
+
+use crossterm::{
+    self, queue,
+    style::{Colors, ResetColor, SetColors},
+    QueueableCommand,
+};
+use futures::stream::{Stream, StreamExt};
 use tokio::{
     self,
     runtime::{Builder as RuntimeBuilder, Runtime},
     sync::mpsc::{self, UnboundedReceiver, UnboundedSender},
 };
+use zi::{
+    app::{App, ComponentMessage, MessageSender},
+    terminal::{Canvas, Key, Size, Style},
+    Layout,
+};
 
+pub use self::error::{Error, Result};
 use self::{
     painter::{FullPainter, IncrementalPainter, PaintOperation, Painter},
     utils::MeteredWriter,
-};
-use zi::{
-    app::{App, ComponentMessage, MessageSender},
-    terminal::{Canvas, Colour, Key, Size, Style},
-    Layout,
 };
 
 /// Creates a new backend with an incremental painter. It only draws those
@@ -322,9 +326,7 @@ fn initialise_tty<PainterT: Painter, TargetT: Write>(target: &mut TargetT) -> Re
 
 #[inline]
 fn queue_set_style(target: &mut impl Write, style: &Style) -> Result<()> {
-    use crossterm::style::{
-        Attribute, Color, SetAttribute, SetBackgroundColor, SetForegroundColor,
-    };
+    use crossterm::style::{Attribute, SetAttribute, SetBackgroundColor, SetForegroundColor};
 
     // Bold
     if style.bold {
@@ -344,31 +346,20 @@ fn queue_set_style(target: &mut impl Write, style: &Style) -> Result<()> {
         queue!(target, SetAttribute(Attribute::NoUnderline))?;
     }
 
-    // Background
-    {
-        let Colour { red, green, blue } = style.background;
-        queue!(
+    let bg_color = style.background.as_crosstem_color();
+    let fg_color = style.foreground.as_crosstem_color();
+    match (bg_color, fg_color) {
+        (None, None) => queue!(target, ResetColor),
+        (None, Some(fg)) => queue!(target, ResetColor, SetForegroundColor(fg)),
+        (Some(bg), None) => queue!(target, ResetColor, SetBackgroundColor(bg)),
+        (Some(bg), Some(fg)) => queue!(
             target,
-            SetBackgroundColor(Color::Rgb {
-                r: red,
-                g: green,
-                b: blue
+            SetColors(Colors {
+                background: Some(bg),
+                foreground: Some(fg)
             })
-        )?;
-    }
-
-    // Foreground
-    {
-        let Colour { red, green, blue } = style.foreground;
-        queue!(
-            target,
-            SetForegroundColor(Color::Rgb {
-                r: red,
-                g: green,
-                b: blue
-            })
-        )?;
-    }
+        ),
+    }?;
 
     Ok(())
 }

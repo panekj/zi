@@ -1,7 +1,7 @@
-use ropey::Rope;
 use std::{cmp, rc::Rc};
-use unicode_width::UnicodeWidthStr;
 
+use ropey::Rope;
+use unicode_width::UnicodeWidthStr;
 use zi::{
     components::{
         input::{Cursor, Input, InputChange, InputProperties, InputStyle},

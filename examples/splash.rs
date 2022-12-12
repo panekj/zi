@@ -1,4 +1,5 @@
 use std::cmp;
+
 use unicode_width::UnicodeWidthStr;
 use zi::{
     components::border::{Border, BorderProperties},
